@@ -93,10 +93,39 @@
     ];
 
     const prerequisitos = {
+      "Gestión por Competencias en las Organizaciones": ["Introducción a la Gestión de Personas"],
+      "Incorporación de Personas": ["Gestión por Competencias en las Organizaciones"],
       "Gestión del Rendimiento": ["Incorporación de Personas"],
       "Gestión de la Capacitación y Desarrollo": ["Gestión del Rendimiento"],
-      "Evaluación de Proyectos de Inversión Privada": ["Matematica Financiera"],
-      "CTI Seminario de Tesis": ["Metodología de la Investigación"]
+      "Comportamiento Organizacional": ["Gestión de la Capacitación y Desarrollo"],
+      "Empleabilidad y Plan de Desarrollo Profesional": ["Gestión de la Capacitación y Desarrollo"],
+      "Gestión de las Compensaciones": ["Gestión de la Capacitación y Desarrollo"],
+      "Derecho Colectivod del Trabajo": ["Derecho Individual del Trabajo"],
+      "Administración de Personal y Remuneraciones": ["Gestión de las Compensaciones"],
+      "Employee Experience y Cultura Organizacional": ["Empleabilidad y Plan de Desarrollo Profesional"],
+      "Seguridad y Salud Ocupacional": ["Administración de Personal y Remuneraciones"],
+      "Gestión de Personas en el Sector Público": ["Administración de Personal y Remuneraciones"],
+      "Gestión de las Relaciones de Trabajo": ["Administración de Personal y Remuneraciones", "Employee Experience y Cultura Organizacional"],
+      "Gestión del Cambio Organizacional": ["Employee Experience y Cultura Organizacional"],
+      "Diversidad e Inclusión": ["Employee Experience y Cultura Organizacional"],
+      "HR Analytics": ["Gestión de las Relaciones de Trabajo", "Gestión del Cambio Organizacional", "Diversidad e Inclusión"],
+      "HR Digital y Metodologías Ágiles": ["Gestión de las Relaciones de Trabajo", "Gestión del Cambio Organizacional", "Diversidad e Inclusión"],
+      "Liderazgo Gerencial y Equipos de Alto Rendimiento": ["Gestión de las Relaciones de Trabajo", "Gestión del Cambio Organizacional", "Diversidad e Inclusión"],
+      "Diseño Organizacional y Procesos": ["Introducción a la Administración en la Globalización"],
+      "Marketing": ["Introducción a la Administración en la Globalización"],
+      "Investigación de Mercados Aplicada a los Negocios": ["Marketing", "Estadística Inferencial"],
+      "Introducción a la Contabilidad Financiera": ["Fundamentos de las Finanzas"],
+      "Matematica Financiera": ["Fundamentos de las Finanzas"],
+      "Finanzas Corporativas": ["Matematica Financiera"],
+      "Evaluación de Proyectos de Inversión Privada": ["Finanzas Corporativas", "Análisis e Interpretación de EE.FF"],
+      "Introducción a la Contabilidad Gerencial": ["Introducción a la Contabilidad Financiera"],
+      "Análisis e Interpretación de EE.FF": ["Introducción a la Contabilidad Gerencial"],
+      "Teoría Microeconomica": ["Macroeconomía"],
+      "Administración de las Operaciones": ["Métodos Cuantitativos"],
+      "Cálculo": ["Fundamentos para el Cálculo"],
+      "Estadística Descriptiva": ["Cálculo"],
+      "Estadística Inferencial": ["Estadística Descriptiva"],
+      "Métodos Cuantitativos": ["Estadística Inferencial"]
     };
 
     const estado = JSON.parse(localStorage.getItem("mallaEstado") || '{}');
@@ -121,7 +150,7 @@
 
         const id = `${i}-${materia}`;
         const requisitos = prerequisitos[materia] || [];
-        const requisitosAprobados = requisitos.every(r => Object.values(estado).includes(r));
+        const requisitosAprobados = requisitos.every(req => Object.values(estado).includes(req));
 
         if (estado[id]) {
           div.classList.add("approved");
@@ -132,7 +161,6 @@
 
         div.addEventListener("click", () => {
           if (div.classList.contains("locked")) return;
-
           if (div.classList.contains("approved")) {
             div.classList.remove("approved");
             delete estado[id];
@@ -152,3 +180,4 @@
   </script>
 </body>
 </html>
+
