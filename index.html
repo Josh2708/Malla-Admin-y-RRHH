@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Malla Curricular - Gestión de Personas</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f7fa;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #2b4f81;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .cycle {
+      background: #e3ecf3;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    .cycle h2 {
+      text-align: center;
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: #1c3f63;
+    }
+    .course {
+      background: #fff;
+      padding: 8px;
+      margin: 5px 0;
+      border-left: 5px solid #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+      position: relative;
+    }
+    .course:hover {
+      background: #e6f0ff;
+    }
+    .approved {
+      background: #d4edda !important;
+      border-left-color: #28a745;
+      text-decoration: line-through;
+    }
+    .locked {
+      background: #f8d7da;
+      border-left-color: #dc3545;
+      cursor: not-allowed;
+    }
+    .course[title]::after {
+      content: attr(title);
+      position: absolute;
+      bottom: 100%;
+      left: 0;
+      background: #333;
+      color: #fff;
+      padding: 4px 8px;
+      font-size: 12px;
+      border-radius: 4px;
+      white-space: nowrap;
+      display: none;
+    }
+    .course[title]:hover::after {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <h1>Malla Curricular - Gestión de Personas</h1>
+  <div class="grid" id="grid"></div>
+
+  <script>
+    const malla = [
+      ["Introducción a la Gestión de Personas", "Liderazgo Personal y Felicidad en el Trabajo", "Aprendizaje Estratégico y Liderazgo", "Crítica y Comunicación", "Pensamiento Crítico Aplicado", "Sistemas y Sociedad"],
+      ["Gestión por Competencias en las Organizaciones", "Introducción a la Administración en la Globalización", "Fundamentos de las Finanzas", "Macroeconomía", "Fundamentos para el Cálculo", "Fundamentos de la Investigación Académica"],
+      ["Incorporación de Personas", "Coaching y Resolución de Conflictos", "Matematica Financiera", "Teoría Microeconomica", "Cálculo", "(Electivo)"],
+      ["Gestión del Rendimiento", "Marketing", "Finanzas Corporativas", "Introducción a la Contabilidad Financiera", "Estadística Descriptiva", "(Electivo)"],
+      ["Gestión de la Capacitación y Desarrollo", "Comunicación para el Liderazgo", "Diseño Organizacional y Procesos", "Introducción a la Contabilidad Gerencial", "Derecho Individual del Trabajo", "Estadística Inferencial", "(Electivo)"],
+      ["Comportamiento Organizacional", "Empleabilidad y Plan de Desarrollo Profesional", "Gestión de las Compensaciones", "Análisis e Interpretación de EE.FF", "Métodos Cuantitativos", "(Electivo)", "(Electivo)"],
+      ["Administración de Personal y Remuneraciones", "Employee Experience y Cultura Organizacional", "Investigación de Mercados Aplicada a los Negocios", "Evaluación de Proyectos de Inversión Privada", "Administración de Operaciones", "(Electivo)", "(Electivo)"],
+      ["Derecho Colectivod del Trabajo", "Seguridad y Salud Ocupacional", "Gestión del Cambio Organizacional", "Gestión de Proyectos", "Sistemas de Información en Entornos Digitales", "(Electivo)", "(Electivo)"],
+      ["Gestión de Personas en el Sector Público", "Gestión de las Relaciones de Trabajo", "Diversidad e Inclusión", "Gerencia Estratégica en Organizaciones Conscientes", "Metodología de la Investigación", "(Electivo)"],
+      ["HR Analytics", "HR Digital y Metodologías Ágiles", "CTI Seminario de Tesis", "Liderazgo Gerencial y Equipos de Alto Rendimiento", "Ética y Responsabilidad Social Empresarial"]
+    ];
+
+    const prerequisitos = {
+      "Gestión del Rendimiento": ["Incorporación de Personas"],
+      "Gestión de la Capacitación y Desarrollo": ["Gestión del Rendimiento"],
+      "Evaluación de Proyectos de Inversión Privada": ["Matematica Financiera"],
+      "CTI Seminario de Tesis": ["Metodología de la Investigación"]
+    };
+
+    const estado = JSON.parse(localStorage.getItem("mallaEstado") || '{}');
+
+    function guardarEstado() {
+      localStorage.setItem("mallaEstado", JSON.stringify(estado));
+    }
+
+    const grid = document.getElementById("grid");
+
+    malla.forEach((nivel, i) => {
+      const col = document.createElement("div");
+      col.className = "cycle";
+      const title = document.createElement("h2");
+      title.textContent = `Nivel ${i + 1}`;
+      col.appendChild(title);
+
+      nivel.forEach(materia => {
+        const div = document.createElement("div");
+        div.className = "course";
+        div.textContent = materia;
+
+        const id = `${i}-${materia}`;
+        const requisitos = prerequisitos[materia] || [];
+        const requisitosAprobados = requisitos.every(r => Object.values(estado).includes(r));
+
+        if (estado[id]) {
+          div.classList.add("approved");
+        } else if (requisitos.length && !requisitosAprobados) {
+          div.classList.add("locked");
+          div.title = `Requiere: ${requisitos.join(", ")}`;
+        }
+
+        div.addEventListener("click", () => {
+          if (div.classList.contains("locked")) return;
+
+          if (div.classList.contains("approved")) {
+            div.classList.remove("approved");
+            delete estado[id];
+          } else {
+            div.classList.add("approved");
+            estado[id] = materia;
+          }
+          guardarEstado();
+          location.reload();
+        });
+
+        col.appendChild(div);
+      });
+
+      grid.appendChild(col);
+    });
+  </script>
+</body>
+</html>
